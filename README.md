@@ -1,3 +1,10 @@
+Cara Menjalankan nya
+Persiapan & Instalasi
+Buka terminal dan jalankan perintah berikut:
+-npm init -y
+-npm install express sequelize mysql2 cors body-parser
+dan Node App.js Untuk menjalankannya
+
 Admin POST buku
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/87a44d20-29c6-435d-80aa-f4680c307b6b" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/0de222c7-f3cf-4551-b7d9-a325c3590ebb" />
