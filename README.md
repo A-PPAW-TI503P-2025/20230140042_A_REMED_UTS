@@ -13,11 +13,11 @@ DataBase
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3ea440ed-fb49-408e-8998-6cb8ba609cee" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8581b044-9ced-44f1-b45a-fc2684cbaaff" />
 Halaman Dashboard
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/279ae3a8-6545-426a-8e55-e44bf772deb3" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/61b00e96-d37f-43fd-b83e-1385eee5ef30" />
 Halaman Admin
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1668eb47-5d96-48a3-a315-6916786ce960" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ec7bd573-14b4-4006-bf83-f49a0e634b45" />
 Halaman Peminjaman
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1a10ac11-8a81-4976-8f4e-db4b84938624" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cadfc2dd-b416-477e-aad8-4b7ed19fb5cd" />
 
 
 
