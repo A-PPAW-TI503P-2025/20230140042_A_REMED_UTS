@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* TEMA PERPUSTAKAAN (Biru Tua) */
+        :root { --primary: #2c3e50; --bg: #ecf0f1; --accent: #3498db; }
+        
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border-top: 5px solid var(--primary); 
+        }
+        
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        h1, h2 { color: var(--primary); margin-top: 0; }
+        
+        /* Form Styling */
+        .form-box { background: #f7f9fa; padding: 20px; border-radius: 6px; margin-bottom: 2rem; border: 1px solid #dfe6e9; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #2d3436; }
+        input { width: 100%; padding: 12px; border: 1px solid #b2bec3; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Buttons */
+        .btn { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-save { background: var(--accent); width: 100%; }
+        .btn-save:hover { background: #2980b9; }
+        .btn-cancel { background: #95a5a6; width: 100%; margin-top: 5px; display: none; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #dfe6e9; }
+        th { background-color: var(--primary); color: white; }
+        
+        .btn-edit { background: #f39c12; color: white; padding: 6px 10px; border:none; border-radius: 3px; cursor: pointer;}
+        .btn-delete { background: #e74c3c; color: white; padding: 6px 10px; border:none; border-radius: 3px; cursor: pointer; margin-left: 5px; }
+        
+        .nav-link { color: var(--accent); text-decoration: none; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+        .nav-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-link">← Kembali ke Halaman Utama</a>
+        
+        <div class="header-nav">
+            <h1>Dashboard Pustakawan</h1>
+        </div>
+
+        <div class="form-box">
+            <h2 id="form-title" style="font-size: 1.2rem;">Tambah Buku Baru</h2>
+            <input type="hidden" id="bookId">
+            
+            <div class="form-group">
+                <label>Judul Buku</label>
+                <input type="text" id="title" placeholder="Contoh: Laskar Pelangi">
+            </div>
+            <div class="form-group">
+                <label>Penulis</label>
+                <input type="text" id="author" placeholder="Nama Pengarang">
+            </div>
+            <div class="form-group">
+                <label>Stok Awal</label>
+                <input type="number" id="stock" placeholder="0" min="0">
+            </div>
+
+            <button onclick="saveBook()" class="btn btn-save" id="btn-save">Simpan Data</button>
+            <button onclick="resetForm()" class="btn btn-cancel" id="btn-cancel">Batal</button>
+        </div>
+
+        <h2>Database Koleksi</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Judul</th>
+                    <th>Penulis</th>
+                    <th>Stok</th>
+                    <th style="width: 140px;">Kelola</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = '/api/books';
+        // Header ini tetap dikirim agar Backend mengizinkan akses (Simulasi)
+        const HEADERS = { 'Content-Type': 'application/json', 'x-user-role': 'admin' };
+
+        // 1. Load Data
+        async function loadBooks() {
+            try {
+                const res = await fetch(API_URL);
+                const books = await res.json();
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
+                books.forEach(book => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${book.id}</td>
+                            <td><b>${book.title}</b></td>
+                            <td>${book.author}</td>
+                            <td>${book.stock}</td>
+                            <td>
+                                <button class="btn-edit" onclick="editMode('${book.id}', '${escapeHtml(book.title)}', '${escapeHtml(book.author)}', ${book.stock})">Edit</button>
+                                <button class="btn-delete" onclick="deleteBook('${book.id}')">Hapus</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        // 2. Simpan Data
+        async function saveBook() {
+            const id = document.getElementById('bookId').value;
+            const payload = {
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                stock: document.getElementById('stock').value
+            };
+            
+            if(!payload.title || !payload.author || !payload.stock) return alert("Lengkapi data!");
+            
+            const url = id ? `${API_URL}/${id}` : API_URL;
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, { method, headers: HEADERS, body: JSON.stringify(payload) });
+            alert("Berhasil disimpan!");
+            resetForm(); loadBooks();
+        }
+
+        // 3. Hapus Data
+        async function deleteBook(id) {
+            if(confirm("Hapus buku ini secara permanen?")) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: HEADERS });
+                loadBooks();
+            }
+        }
+
+        // Helper Functions
+        function editMode(id, title, author, stock) {
+            document.getElementById('bookId').value = id;
+            document.getElementById('title').value = title;
+            document.getElementById('author').value = author;
+            document.getElementById('stock').value = stock;
+            document.getElementById('form-title').innerText = "Edit Buku (ID: " + id + ")";
+            document.getElementById('btn-save').innerText = "Update Data";
+            document.getElementById('btn-cancel').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function resetForm() {
+            document.getElementById('bookId').value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('stock').value = '';
+            document.getElementById('form-title').innerText = "Tambah Buku Baru";
+            document.getElementById('btn-save').innerText = "Simpan Data";
+            document.getElementById('btn-cancel').style.display = 'none';
+        }
+        function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+        
+        loadBooks();
+    </script>
+</body>
+</html>

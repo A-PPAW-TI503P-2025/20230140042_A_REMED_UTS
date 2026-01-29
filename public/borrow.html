@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Peminjaman</title>
+    <style>
+        :root { --primary: #2c3e50; --bg: #ecf0f1; --dark: #2f3542; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        
+        .card-form { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            width: 100%; max-width: 450px;
+            border-top: 5px solid var(--primary);
+        }
+
+        h2 { text-align: center; color: var(--primary); margin-top: 0; margin-bottom: 25px; font-size: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; color: #57606f; margin-bottom: 0.5rem; }
+        
+        input { width: 100%; padding: 12px; border: 1px solid #dfe6e9; border-radius: 4px; box-sizing: border-box; font-size: 1rem; color: var(--dark); background: #fdfdfd; }
+        input[readonly] { background: #f1f2f6; color: #636e72; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        
+        .btn-geo { background: #2f3542; color: white; }
+        .btn-geo:hover { background: #1e272e; }
+        
+        .btn-submit { background: #27ae60; color: white; opacity: 0.6; cursor: not-allowed; }
+        .btn-submit.active { opacity: 1; cursor: pointer; }
+        .btn-submit.active:hover { background: #219150; }
+
+        .btn-back { display: block; text-align: center; margin-top: 20px; color: #7f8c8d; text-decoration: none; font-size: 0.9rem; }
+        .btn-back:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="card-form">
+        <h2>📋 Formulir Peminjaman</h2>
+        
+        <div class="form-group">
+            <label>Judul Buku</label>
+            <input type="text" id="bookTitle" readonly>
+        </div>
+        
+        <div class="form-group">
+            <label>Lokasi Peminjam</label>
+            <input type="text" id="location" readonly placeholder="Menunggu deteksi lokasi...">
+        </div>
+
+        <button onclick="getLocation()" class="btn btn-geo">📍 Ambil Lokasi Saya</button>
+        <button onclick="submitBorrow()" id="btnSubmit" class="btn btn-submit" disabled>✅ Konfirmasi Pinjam</button>
+        
+        <a href="index.html" class="btn-back">Batal & Kembali</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('bookId');
+        document.getElementById('bookTitle').value = urlParams.get('title') || '-';
+        let lat, long;
+
+        function getLocation() {
+            document.getElementById('location').value = "Mendeteksi...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    lat = pos.coords.latitude;
+                    long = pos.coords.longitude;
+                    document.getElementById('location').value = `${lat}, ${long}`;
+                    const btn = document.getElementById('btnSubmit');
+                    btn.disabled = false; btn.classList.add('active');
+                }, () => alert("Gagal mengambil lokasi."));
+            } else { alert("Browser tidak support Geo."); }
+        }
+
+        async function submitBorrow() {
+            if(!bookId || !lat) return;
+            const res = await fetch('/api/borrow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-user-role': 'user', 'x-user-id': '101' },
+                body: JSON.stringify({ bookId, latitude: lat, longitude: long })
+            });
+            const data = await res.json();
+            alert(res.ok ? "Berhasil dipinjam!" : "Gagal: " + data.message);
+            if(res.ok) window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

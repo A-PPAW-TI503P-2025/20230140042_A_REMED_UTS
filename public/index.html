@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Perpustakaan</title>
+    <style>
+        /* TEMA PERPUSTAKAAN: Biru Tua & Kertas */
+        :root { 
+            --primary: #2c3e50; /* Midnight Blue (Warna Utama) */
+            --accent: #3498db;  /* Biru Terang (Aksen) */
+            --bg: #ecf0f1;      /* Abu-abu Kertas (Background) */
+            --text: #2c3e50;    /* Teks Gelap */
+        }
+        
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border-top: 5px solid var(--primary); 
+        }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        h1 { color: var(--primary); margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 10px; }
+        
+        /* Tombol Admin (Gelap) */
+        .btn-nav { 
+            background: var(--primary); 
+            color: white; 
+            text-decoration: none; 
+            padding: 10px 20px; 
+            border-radius: 4px; 
+            font-size: 0.9rem; 
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-nav:hover { background: #1a252f; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid #dfe6e9; }
+        
+        /* Header Tabel Biru */
+        th { background-color: var(--primary); color: white; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        tr:hover { background-color: #f1f2f6; }
+
+        /* Badges Status */
+        .badge { padding: 6px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: bold; }
+        .badge-ok { background: #dff9fb; color: #130f40; border: 1px solid #c7ecee; }
+        .badge-empty { background: #ffcccc; color: #b33939; border: 1px solid #ffb8b8; }
+
+        /* Tombol Pinjam (Biru Terang) */
+        .btn-borrow { 
+            background: var(--accent); 
+            color: white; 
+            text-decoration: none; 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            font-size: 0.85rem; 
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .btn-borrow:hover { background: #2980b9; }
+        
+        .text-disabled { color: #b2bec3; font-style: italic; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📖 E-Library</h1>
+                <p style="margin: 5px 0 0; color: #7f8c8d;">Sistem Peminjaman Buku Terpadu</p>
+            </div>
+            <a href="admin.html" class="btn-nav">Mode Admin</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th>Judul Buku</th>
+                    <th>Penulis</th>
+                    <th style="width: 120px;">Stok</th>
+                    <th style="width: 140px; text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr><td colspan="5" style="text-align:center; padding: 20px; color: #7f8c8d;">Sedang memuat data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadBooks() {
+            try {
+                const response = await fetch('/api/books');
+                const books = await response.json();
+                
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
+
+                if(books.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Belum ada buku tersedia.</td></tr>';
+                    return;
+                }
+
+                books.forEach(book => {
+                    const isAvailable = book.stock > 0;
+                    
+                    const stockDisplay = isAvailable 
+                        ? `<span class="badge badge-ok">${book.stock} Tersedia</span>` 
+                        : `<span class="badge badge-empty">Habis</span>`;
+
+                    const actionButton = isAvailable
+                        ? `<a href="borrow.html?bookId=${book.id}&title=${encodeURIComponent(book.title)}" class="btn-borrow">Pinjam</a>`
+                        : `<span class="text-disabled">Stok Kosong</span>`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="color:#7f8c8d;">#${book.id}</td>
+                        <td><b style="color: var(--primary); font-size: 1.05rem;">${book.title}</b></td>
+                        <td>${book.author}</td>
+                        <td>${stockDisplay}</td>
+                        <td style="text-align: center;">${actionButton}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5" style="text-align:center;">Gagal koneksi.</td></tr>';
+            }
+        }
+        loadBooks();
+    </script>
+</body>
+</html>
