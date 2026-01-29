@@ -9,6 +9,16 @@ User POST buku (meminjam buku)
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cad4387a-c7b0-400b-a4f4-0dc12129e931" />
 melihat semua buku
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/740859fb-8038-4953-bf58-145bdcba5b19" />
+DataBase
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3ea440ed-fb49-408e-8998-6cb8ba609cee" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8581b044-9ced-44f1-b45a-fc2684cbaaff" />
+Halaman Dashboard
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/279ae3a8-6545-426a-8e55-e44bf772deb3" />
+Halaman Admin
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1668eb47-5d96-48a3-a315-6916786ce960" />
+Halaman Peminjaman
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1a10ac11-8a81-4976-8f4e-db4b84938624" />
+
 
 
 
